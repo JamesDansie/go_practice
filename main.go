@@ -21,7 +21,13 @@ func main() {
 	var userName string
 	var userTickets uint
 	// ask user for their name
-	userName = "Tom"
-	userTickets = 2
+	fmt.Println("What is your name?")
+	fmt.Scan(&userName)
+	fmt.Println("How many tickets would you like?")
+	fmt.Scan(&userTickets)
 	fmt.Printf("User %v booked %v tickets.\n", userName, userTickets)
+
+	// print vs print pointer
+	fmt.Println(remainingTickets)
+	fmt.Println(&remainingTickets)
 }
