@@ -1,16 +1,15 @@
 package main
 
 import (
-	"booking-app/helper"
 	"fmt"
-	"strings"
+	"strconv"
 )
 
 const conferenceTickets = 50
 
 var conferenceName string = "Go Conference"
 var remainingTickets uint = 50
-var bookings []string
+var bookings = make([]map[string]string, 0)
 
 func main() {
 	greetUsers()
@@ -18,7 +17,7 @@ func main() {
 	for remainingTickets > 0 && len(bookings) < 50 {
 		userFirstName, userLastName, userTickets := getUserInput()
 
-		isValidName, isValidTicketNumber := helper.ValidateUserInput(userFirstName, userLastName, userTickets, remainingTickets)
+		isValidName, isValidTicketNumber := validateUserInput(userFirstName, userLastName, userTickets)
 
 		if isValidName && isValidTicketNumber {
 			bookTicket(userTickets, userFirstName, userLastName)
@@ -50,9 +49,7 @@ func greetUsers() {
 func getFirstNames() []string {
 	firstNames := []string{}
 	for _, booking := range bookings {
-		var names = strings.Fields(booking)
-		var firstName = names[0]
-		firstNames = append(firstNames, firstName)
+		firstNames = append(firstNames, booking["firstName"])
 	}
 	return firstNames
 }
@@ -75,8 +72,19 @@ func getUserInput() (string, string, uint) {
 
 func bookTicket(userTickets uint, userFirstName string, userLastName string) {
 	remainingTickets = remainingTickets - userTickets
-	bookings = append(bookings, userFirstName+" "+userLastName)
+	var userData = make(map[string]string)
+	userData["firstName"] = userFirstName
+	userData["lastName"] = userLastName
+	// can't have mixed data types, so have to convert uint64 to string
+	userData["tickets"] = strconv.FormatUint(uint64(userTickets), 10)
+	bookings = append(bookings, userData)
 
 	fmt.Printf("User %v %v booked %v tickets.\n", userFirstName, userLastName, userTickets)
 	fmt.Printf("%v tickets remaining for %v.\n", remainingTickets, conferenceName)
+}
+
+func validateUserInput(userFirstName string, userLastName string, userTickets uint) (bool, bool) {
+	isValidName := len(userFirstName) >= 2 && len(userLastName) >= 2
+	isValidTicketNumber := userTickets > 0 && userTickets <= remainingTickets
+	return isValidName, isValidTicketNumber
 }
